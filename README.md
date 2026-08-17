@@ -10,18 +10,21 @@
 
 | 文件 | 内容 | 何时读 |
 |------|------|--------|
-| **[SCHEME.md](./SCHEME.md)** | 完整方案 + 落地状态 | 开始前 |
-| **[RESEARCH.md](./RESEARCH.md)** | 4 个开源项目调研对比 | 想了解选型理由时 |
-| **[RUNBOOK.md](./RUNBOOK.md)** | 一步步操作手册 | 开始落地时 |
+| **[docs/SCHEME.md](./docs/SCHEME.md)** | 完整方案 + 落地状态 | 开始前 |
+| **[docs/RESEARCH.md](./docs/RESEARCH.md)** | 4 个开源项目调研对比 | 想了解选型理由时 |
+| **[docs/RUNBOOK.md](./docs/RUNBOOK.md)** | 一步步操作手册 | 开始落地时 |
 
 ## 📁 目录结构
 
 ```
 PNG2PPT/
 ├── README.md           ← 本文件(目录索引)
-├── SCHEME.md           ← 完整方案
-├── RESEARCH.md         ← 联网调研记录
-├── RUNBOOK.md          ← 落地手册
+├── docs/               ← 全部文档
+│   ├── SCHEME.md       ← 完整方案
+│   ├── RESEARCH.md     ← 联网调研记录
+│   ├── RUNBOOK.md      ← 落地手册
+│   ├── REAL_TEST_RESULTS.md  ← 真实课件测试报告
+│   └── TEST_RESULTS.md ← 综合测试结果
 ├── LICENSE             ← MIT
 ├── requirements.txt    ← Python 依赖
 ├── font_estimator.py   ← 字号估算工具(纯逻辑)
@@ -90,7 +93,7 @@ ruff check .
 
 结果存放在 `tests_local/real_pptx_mobile/` (15 个 .pptx,总 13MB)
 
-**详情见 [REAL_TEST_RESULTS.md](./REAL_TEST_RESULTS.md)**
+**详情见 [docs/REAL_TEST_RESULTS.md](./docs/REAL_TEST_RESULTS.md)**
 
 ## 🖼️ 示例输出 (Sample Output)
 
@@ -139,6 +142,6 @@ ruff check .
 
 ## 🆘 遇到问题
 
-1. 先查 [RUNBOOK.md](./RUNBOOK.md) 末尾的"常见问题"
+1. 先查 [docs/RUNBOOK.md](./docs/RUNBOOK.md) 末尾的"常见问题"
 2. 再看 px-image2pptx 的 [README](px-image2pptx/README.md) / [SKILL.md](px-image2pptx/SKILL.md)
 3. 仍不行 → 看 `px-image2pptx/px_image2pptx/` 源码,代码可读性很好
