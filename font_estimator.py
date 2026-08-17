@@ -39,6 +39,7 @@ def estimate_font_size(
     bbox_h_px: float = 0,
     img_w_px: int = 0,
     slide_w_inches: float = 13.333,
+    snap: bool = False,
 ) -> int:
     """字号反推(按 bbox 像素高度三档分档)
 
@@ -48,13 +49,16 @@ def estimate_font_size(
         bbox_h_px: bbox 像素高 (主依据)
         img_w_px: 原图宽(此处不用)
         slide_w_inches: slide 宽(此处不用)
+        snap: 是否把结果 snap 到候选池 (CANDIDATE_POOL),默认 False
 
     Returns:
-        字号(pt): 30 / 26 / 22
+        字号(pt): 30 / 26 / 22 (或 snap 后的值)
     """
     if bbox_h_px <= 0:
-        return SIZE_TIERS[-1][1]
-    return classify_by_height(bbox_h_px)
+        size = SIZE_TIERS[-1][1]
+        return snap_to_pool(size) if snap else size
+    size = classify_by_height(bbox_h_px)
+    return snap_to_pool(size) if snap else size
 
 
 # === 兼容旧接口 (px 同款公式 + 宽度自适应, 备用) ===

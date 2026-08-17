@@ -2,6 +2,10 @@
 
 > 把纯图片课件(PNG) / MinerU 解析结果转成可编辑的 PowerPoint 演示文稿
 
+![CI](https://github.com/sckall/image-to-ppt/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
 ## 📚 必读文档
 
 | 文件 | 内容 | 何时读 |
@@ -18,12 +22,19 @@ PNG2PPT/
 ├── SCHEME.md           ← 完整方案
 ├── RESEARCH.md         ← 联网调研记录
 ├── RUNBOOK.md          ← 落地手册
-├── font_estimator.py   ← 字号估算工具
-├── image_detector.py   ← 图像检测 v1
-├── image_detector_v2.py← 图像检测 v2
+├── LICENSE             ← MIT
+├── requirements.txt    ← Python 依赖
+├── font_estimator.py   ← 字号估算工具(纯逻辑)
+├── image_detector_v2.py← 图像检测(active, v1 已删)
 ├── mineru2pptx.py      ← MinerU → PPT 主流程
 ├── px2pptx_batch.py    ← px-image2pptx 批处理封装
-├── px2pptx.sh          ← 启动脚本
+├── px2pptx.sh          ← 一键启动脚本
+├── gui.py              ← 简单 Tkinter GUI(可选)
+├── tests/              ← 单元测试 (pytest)
+│   ├── test_font_estimator.py
+│   ├── test_image_detector_v2.py
+│   └── test_mineru2pptx.py
+├── .github/workflows/ci.yml  ← CI (ruff + pytest, 3 个 Python 版本)
 └── px-image2pptx/      ← 上游依赖,需 `git clone` 获取(见下方)
     ├── px_image2pptx/  ← 核心代码
     ├── examples/       ← 自带示例图
@@ -46,6 +57,28 @@ cd ..
 mkdir -p tests_local
 cp px-image2pptx/examples/image_good1_input.png tests_local/test1.png
 px-image2pptx tests_local/test1.png -o tests_local/test1.pptx --lang en
+```
+
+## 🖥️ 多种使用方式
+
+```bash
+# 方式 1: 批处理 (推荐, 模型只加载一次)
+python3 px2pptx_batch.py tests_local/ tests_local_out/ --lang ch
+
+# 方式 2: 单文件 shell 脚本
+./px2pptx.sh tests_local/test1.png
+
+# 方式 3: GUI (无需命令行, 弹窗选文件)
+python3 gui.py
+
+# 方式 4: MinerU JSON → PPT
+python3 mineru2pptx.py <img_dir> <mineru_output_dir> out.pptx [--snap] [--slide-width 13.333]
+
+# 跑测试
+pytest tests/ -v
+
+# lint
+ruff check .
 ```
 
 ## 📂 真实测试案例

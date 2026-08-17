@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 """px2pptx_batch.py - batch image to PPTX with model reuse"""
 
-import argparse, sys, tempfile, time
+import argparse
+import logging
+import sys
+import tempfile
+import time
 from pathlib import Path
 import numpy as np
 from PIL import Image
+
+logger = logging.getLogger(__name__)
 
 MAX_OCR_WIDTH = 1500
 OCR_LIMIT_SIDE = 960
@@ -33,7 +39,7 @@ class Pipeline:
         from px_image2pptx.textmask import compute_masks
         from px_image2pptx.inpaint import inpaint
         from px_image2pptx.assemble import assemble_pptx
-        print("[init] loading OCR (" + lang + ")...", flush=True)
+        logger.info("loading OCR (%s)...", lang)
         t0 = time.time()
         # 用 mobile 模型,速度比 server 模型快 ~10x,精度足够课件场景
         # px 默认用 server,中文课件场景 mobile 完全够用
@@ -46,7 +52,7 @@ class Pipeline:
             use_doc_orientation_classify=False,
             use_doc_unwarping=False,
         )
-        print("[init] OCR ready ({:.1f}s)".format(time.time() - t0), flush=True)
+        logger.info("OCR ready (%.1fs)", time.time() - t0)
         self.compute_masks = compute_masks
         self.inpaint = inpaint
         self.assemble_pptx = assemble_pptx
@@ -120,20 +126,21 @@ class Pipeline:
 
 
 def process_one(pipeline, input_path, output_path):
-    print("\n>> " + input_path.name + " -> " + output_path.name, end=" ", flush=True)
+    logger.info(">> %s -> %s", input_path.name, output_path.name)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         work_dir = Path(tmp)
         resized, ratio = resize_for_ocr(input_path, work_dir)
         if ratio < 1.0:
-            print("(resize {:.2f}x)".format(ratio), end=" ", flush=True)
+            logger.info("  resize %.2fx", ratio)
         try:
             report = pipeline.process(resized, output_path, work_dir)
-            print("OK {} boxes | OCR={:.1f}s Inpaint={:.1f}s Total={:.1f}s".format(
-                report["text_boxes"], report["ocr_time"], report["inpaint_time"], report["total_time"]))
+            logger.info("OK %d boxes | OCR=%.1fs Inpaint=%.1fs Total=%.1fs",
+                        report["text_boxes"], report["ocr_time"],
+                        report["inpaint_time"], report["total_time"])
             return report
         except Exception as e:
-            print("FAIL: " + str(e))
+            logger.error("FAIL: %s", e)
             import traceback
             traceback.print_exc()
             return None
@@ -144,12 +151,24 @@ def main():
     parser.add_argument("input", help="input PNG file or dir")
     parser.add_argument("output", nargs="?", default=None, help="output PPTX file or dir")
     parser.add_argument("--lang", default="ch", choices=["ch", "en"])
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="日志级别 (默认 INFO)",
+    )
     args = parser.parse_args()
+
+    logging.basicConfig(
+        level=getattr(logging, args.log_level),
+        format="%(asctime)s [%(levelname)s] %(message)s",
+    )
+
     setup_env()
     sys.path.insert(0, str(Path(__file__).parent / "px-image2pptx"))
     in_path = Path(args.input)
     if not in_path.exists():
-        print("input not found: " + str(in_path))
+        logger.error("input not found: %s", in_path)
         sys.exit(1)
     if in_path.is_file():
         pipeline = Pipeline(args.lang)
@@ -157,16 +176,16 @@ def main():
         process_one(pipeline, in_path, out_path)
         return
     if not in_path.is_dir():
-        print("not a dir: " + str(in_path))
+        logger.error("not a dir: %s", in_path)
         sys.exit(1)
     out_dir = Path(args.output) if args.output else in_path.parent / (in_path.name + "_pptx")
     out_dir.mkdir(parents=True, exist_ok=True)
     pngs = sorted(in_path.glob("*.png")) + sorted(in_path.glob("*.jpg")) + sorted(in_path.glob("*.jpeg"))
     if not pngs:
-        print("no png/jpg in " + str(in_path))
+        logger.error("no png/jpg in %s", in_path)
         sys.exit(1)
     pipeline = Pipeline(args.lang)
-    print("\nFound {} images -> {}\n".format(len(pngs), out_dir))
+    logger.info("Found %d images -> %s", len(pngs), out_dir)
     t_start = time.time()
     ok = 0
     for png in pngs:
@@ -174,7 +193,8 @@ def main():
         if process_one(pipeline, png, out_pptx):
             ok += 1
     elapsed = time.time() - t_start
-    print("\n=== Done: {}/{}, total {:.1f}s ({:.1f}s/page) ===".format(ok, len(pngs), elapsed, elapsed / len(pngs)))
+    logger.info("=== Done: %d/%d, total %.1fs (%.1fs/page) ===",
+                ok, len(pngs), elapsed, elapsed / len(pngs))
 
 
 if __name__ == "__main__":

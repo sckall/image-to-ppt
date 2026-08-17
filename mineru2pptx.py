@@ -11,11 +11,14 @@
 """
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 from PIL import Image
 from pptx import Presentation
 from pptx.util import Emu, Pt
+
+logger = logging.getLogger(__name__)
 
 
 # 文本框扩展参数: 让文字框略宽, 避免挤压但不过度
@@ -23,7 +26,7 @@ TEXTBOX_PADDING_PX = 8       # 文本框四周扩展像素 (轻微 padding)
 TEXTBOX_MIN_WIDTH_PX = 80    # 文本框最小宽度(像素)
 
 
-def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333):
+def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333, snap_to_pool=False):
     from font_estimator import estimate_font_size, LINE_SPACING
 
     prs = Presentation()
@@ -45,7 +48,7 @@ def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333):
     for img_id in image_ids:
         cl_path = mineru_dir / str(img_id) / "auto" / f"{img_id}_content_list.json"
         if not cl_path.exists():
-            print(f"  skip {img_id}: not found")
+            logger.debug("skip %s: not found", img_id)
             continue
 
         img = Image.open(jpeg_dir / f"{img_id}.jpeg")
@@ -90,7 +93,7 @@ def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333):
                 if not text:
                     continue
 
-                font_pt = estimate_font_size(text, w_px, h_px)
+                font_pt = estimate_font_size(text, w_px, h_px, snap=snap_to_pool)
 
                 # 文本框: 轻微 padding (4 边各 +8px), 保证 min width
                 cx = max(0, x1 - TEXTBOX_PADDING_PX)
@@ -117,8 +120,8 @@ def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333):
                     p.font.bold = True
 
     prs.save(output_pptx)
-    print(f"saved: {output_pptx}")
-    print(f"  slides: {len(prs.slides)}")
+    logger.info("saved: %s", output_pptx)
+    logger.info("  slides: %d", len(prs.slides))
 
 
 def _parse_args(argv=None):
@@ -136,9 +139,26 @@ def _parse_args(argv=None):
         default=13.333,
         help="slide 宽度(英寸), 默认 13.333 (16:9)",
     )
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="日志级别 (默认 INFO)",
+    )
+    parser.add_argument(
+        "--snap",
+        action="store_true",
+        help="把字号 snap 到候选池 (常见 PPT 字号离散值, 减少 ±1-2pt 误差)",
+    )
     return parser.parse_args(argv)
 
 
 if __name__ == "__main__":
     args = _parse_args()
-    build_clean_pptx(args.input_dir, args.mineru_dir, args.output_pptx, args.slide_width)
+    logging.basicConfig(
+        level=getattr(logging, args.log_level),
+        format="%(asctime)s [%(levelname)s] %(message)s",
+    )
+    if args.snap:
+        logger.info("字号 snap to pool 已启用 (CANDIDATE_POOL)")
+    build_clean_pptx(args.input_dir, args.mineru_dir, args.output_pptx, args.slide_width, snap_to_pool=args.snap)
