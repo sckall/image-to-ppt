@@ -82,7 +82,8 @@ NOTES.local.md
 Thumbs.db
 
 # ----- 输出产物（用户跑出来的）-----
-output/
-outputs/
+# 只忽略根目录的 output/ outputs/, examples/ 下的同名目录不受影响
+/output/
+/outputs/
 *.pptx
 !tests_local/README*  # 如果以后要加示例
