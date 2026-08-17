@@ -10,8 +10,8 @@ font_estimator.py - 字号反推(三档,基于真实数据分档)
 依赖: Pillow (字体测宽备用)
 """
 import os
-from PIL import Image, ImageFont
 
+from PIL import ImageFont
 
 # 三档字号经验值 (像素高 -> pt)
 SIZE_TIERS = [
@@ -92,7 +92,7 @@ def _load_font(size_pt: int):
         if os.path.exists(path):
             try:
                 return ImageFont.truetype(path, size_pt)
-            except (OSError, IOError):
+            except OSError:
                 continue
     # 最后兜底:PIL 自带位图字体(无中文但不会崩)
     return ImageFont.load_default()

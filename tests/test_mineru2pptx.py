@@ -30,7 +30,6 @@ class TestParseArgs:
 
     def test_jpg_and_jpeg_glob_logic(self, tmp_path):
         """通过直接测 glob 行为验证 .jpg / .jpeg 双支持(不跑 build_clean_pptx)"""
-        from pathlib import Path
 
         (tmp_path / "1.jpg").touch()
         (tmp_path / "2.jpeg").touch()

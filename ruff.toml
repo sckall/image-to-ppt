@@ -1,0 +1,31 @@
+# Ruff 配置 — 只 lint 本仓库代码, 排除 git submodule
+extend-exclude = [
+    "px-image2pptx",
+    "tests",
+    ".venv",
+    "build",
+    "dist",
+]
+
+# 行长
+line-length = 120
+
+# 目标 Python 版本
+target-version = "py310"
+
+[lint]
+# 选择规则集
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort (import 排序)
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+]
+
+# 允许的例外
+ignore = [
+    "E501",  # 行太长(本项目不强制, 让代码可读优先)
+]

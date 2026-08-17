@@ -1,5 +1,4 @@
 """font_estimator.py 单元测试 — 纯逻辑, 无 I/O"""
-import pytest
 
 from font_estimator import (
     CANDIDATE_POOL,

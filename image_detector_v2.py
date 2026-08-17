@@ -10,10 +10,12 @@ image_detector_v2.py — 图片区域检测 v2
 """
 
 from __future__ import annotations
+
+from pathlib import Path
+
 import cv2
 import numpy as np
 from PIL import Image
-from typing import Any
 
 
 def detect_image_regions_v2(
@@ -82,7 +84,7 @@ def detect_image_regions_v2(
     # 3. 直接连通(不膨胀 — 避免把大块连成整图)
     block_mask = block_has_content.astype(np.uint8) * 255
     # 轻微腐蚀去噪
-    n, labels, stats, _ = cv2.connectedComponentsWithStats(block_mask)
+    n, _labels, stats, _ = cv2.connectedComponentsWithStats(block_mask)
 
     regions = []
     for i in range(1, n):
@@ -131,10 +133,7 @@ def detect_image_regions_v2(
         # 类型判断
         hsv = cv2.cvtColor(roi, cv2.COLOR_RGB2HSV)
         avg_sat = float(hsv[:, :, 1].mean())
-        if avg_sat > 50 and color_std > 40:
-            rtype = 'image'
-        else:
-            rtype = 'chart'
+        rtype = 'image' if avg_sat > 50 and color_std > 40 else 'chart'
 
         regions.append({
             'bbox': {'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2},

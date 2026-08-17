@@ -128,9 +128,10 @@ class App:
             else:
                 self.root.after(0, self._log, f"❌ 失败 (exit {proc.returncode})")
                 self.root.after(0, lambda: messagebox.showerror("失败", f"退出码 {proc.returncode}"))
-        except Exception as e:
-            self.root.after(0, self._log, f"❌ 异常: {e}")
-            self.root.after(0, lambda: messagebox.showerror("异常", str(e)))
+        except (OSError, RuntimeError, subprocess.SubprocessError) as e:
+            err = str(e)
+            self.root.after(0, self._log, f"❌ 异常: {err}")
+            self.root.after(0, lambda err=err: messagebox.showerror("异常", err))
         finally:
             self.root.after(0, lambda: self.run_btn.config(state=tk.NORMAL, text="开始转换"))
 

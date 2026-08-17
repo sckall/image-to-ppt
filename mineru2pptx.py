@@ -12,8 +12,8 @@
 import argparse
 import json
 import logging
-import sys
 from pathlib import Path
+
 from PIL import Image
 from pptx import Presentation
 from pptx.util import Emu, Pt
@@ -27,7 +27,7 @@ TEXTBOX_MIN_WIDTH_PX = 80    # 文本框最小宽度(像素)
 
 
 def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333, snap_to_pool=False):
-    from font_estimator import estimate_font_size, LINE_SPACING
+    from font_estimator import LINE_SPACING, estimate_font_size
 
     prs = Presentation()
     blank = prs.slide_layouts[6]

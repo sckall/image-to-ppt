@@ -1,6 +1,5 @@
 """image_detector_v2.py 单元测试 — 用生成的 fixture 图"""
 import numpy as np
-import pytest
 from PIL import Image
 
 from image_detector_v2 import detect_image_regions_v2

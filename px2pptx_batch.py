@@ -7,6 +7,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+
 import numpy as np
 from PIL import Image
 
@@ -36,9 +37,9 @@ def resize_for_ocr(src, work_dir):
 
 class Pipeline:
     def __init__(self, lang):
-        from px_image2pptx.textmask import compute_masks
-        from px_image2pptx.inpaint import inpaint
         from px_image2pptx.assemble import assemble_pptx
+        from px_image2pptx.inpaint import inpaint
+        from px_image2pptx.textmask import compute_masks
         logger.info("loading OCR (%s)...", lang)
         t0 = time.time()
         # 用 mobile 模型,速度比 server 模型快 ~10x,精度足够课件场景
@@ -81,7 +82,7 @@ class Pipeline:
         # Assemble
         t0 = time.time()
         tight_mask_uint8 = (tight > 0).astype(np.uint8) * 255
-        report = self.assemble_pptx(
+        self.assemble_pptx(
             image_path=str(image_path),
             ocr_regions=regions,
             output_path=str(output_path),
@@ -107,7 +108,7 @@ class Pipeline:
             polys = page.get("dt_polys", [])
             texts = page.get("rec_texts", [])
             scores = page.get("rec_scores", [])
-            for poly, text, conf in zip(polys, texts, scores):
+            for poly, text, conf in zip(polys, texts, scores, strict=False):
                 xs = [p[0] for p in poly]
                 ys = [p[1] for p in poly]
                 regions.append({
@@ -139,7 +140,7 @@ def process_one(pipeline, input_path, output_path):
                         report["text_boxes"], report["ocr_time"],
                         report["inpaint_time"], report["total_time"])
             return report
-        except Exception as e:
+        except (OSError, RuntimeError, ValueError) as e:
             logger.error("FAIL: %s", e)
             import traceback
             traceback.print_exc()
