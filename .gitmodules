@@ -1,0 +1,3 @@
+[submodule "px-image2pptx"]
+	path = px-image2pptx
+	url = https://github.com/JadeLiu-tech/px-image2pptx.git

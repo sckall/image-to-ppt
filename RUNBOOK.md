@@ -29,7 +29,10 @@ source .venv/bin/activate
 ## Step 2: 安装依赖
 
 ```bash
-cd px-image2pptx  # 假设已按 README Step 0 clone 了上游
+# px-image2pptx 已经是 git submodule, clone 仓库时:
+#   git clone --recurse-submodules https://github.com/sckall/image-to-ppt.git
+# 已经在仓库目录里:
+cd px-image2pptx
 
 # 完整安装 (OCR + Inpaint + 全部)
 pip install -e ".[all]"

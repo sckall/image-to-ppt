@@ -2,10 +2,10 @@
 # PNG2PPT / minerU-to-ppt - .gitignore
 # ============================================================
 
-# ----- 外部依赖（vendor，不入库）-----
-# px-image2pptx 是从上游 git clone 下来的开源项目
-# 通过 `git clone https://github.com/JadeLiu-tech/px-image2pptx.git` 获取
-px-image2pptx/
+# ----- 外部依赖（git submodule）-----
+# px-image2pptx 改用 git submodule 管理
+# clone 时: git clone --recurse-submodules https://github.com/sckall/image-to-ppt.git
+# 已 clone: git submodule update --init --recursive
 
 # ----- 虚拟环境 -----
 .venv/

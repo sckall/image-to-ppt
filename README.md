@@ -45,8 +45,11 @@ PNG2PPT/
 ## 🚀 快速开始
 
 ```bash
-# 0. 拉取上游依赖(本仓库不包含 px-image2pptx,体积较大)
-git clone https://github.com/JadeLiu-tech/px-image2pptx.git
+# 0. Clone 仓库 + submodule(px-image2pptx 是子模块)
+git clone --recurse-submodules https://github.com/sckall/image-to-ppt.git
+cd image-to-ppt
+# 如果已经 clone 了没带 --recurse-submodules, 补救:
+# git submodule update --init --recursive
 
 # 1. 安装
 cd px-image2pptx

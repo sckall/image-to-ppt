@@ -104,6 +104,7 @@ CANDIDATE_POOL = [9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48, 54,
 
 - Python 3.9+
 - macOS / Linux / Windows 均可
+- **px-image2pptx 已是 git submodule**, clone 时用 `--recurse-submodules` 一次拉齐
 
 ### Python 包(px-image2pptx 拆分可选装)
 
