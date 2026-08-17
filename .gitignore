@@ -1,0 +1,88 @@
+# ============================================================
+# PNG2PPT / minerU-to-ppt - .gitignore
+# ============================================================
+
+# ----- 外部依赖（vendor，不入库）-----
+# px-image2pptx 是从上游 git clone 下来的开源项目
+# 通过 `git clone https://github.com/JadeLiu-tech/px-image2pptx.git` 获取
+px-image2pptx/
+
+# ----- 虚拟环境 -----
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# ----- 本地测试产物 / 调试文件 -----
+tests_local/
+*.bak
+*.swp
+*.swo
+*~
+
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ----- 测试 / 覆盖率 -----
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+htmlcov/
+*.cover
+.hypothesis/
+.pyre/
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+
+# ----- 日志 -----
+*.log
+logs/
+*.log.*
+
+# ----- 用户私有 / IDE -----
+.env
+.env.*
+!.env.example
+secrets.yaml
+*.key
+*.pem
+TODO.local.md
+NOTES.local.md
+
+# ----- IDE / 编辑器 -----
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ----- 输出产物（用户跑出来的）-----
+output/
+outputs/
+*.pptx
+!tests_local/README*  # 如果以后要加示例
