@@ -1,0 +1,21 @@
+# ============================================================
+# image-to-ppt (formerly PNG2PPT) - Python dependencies
+# ============================================================
+# 注意:px-image2pptx 不在这里 — 见 README Step 0:
+#   git clone https://github.com/JadeLiu-tech/px-image2pptx.git
+#   cd px-image2pptx && pip install -e ".[all]"
+# ============================================================
+
+# 核心 (本仓库脚本依赖)
+Pillow>=10.0
+numpy>=1.24
+opencv-python>=4.8
+python-pptx>=0.6.21
+
+# OCR (PaddleOCR v5)
+paddleocr>=2.7
+paddlepaddle>=3.0
+
+# Inpainting (LAMA 神经网络, 用于擦除文字重建背景)
+torch>=2.0
+simple-lama-inpainting>=0.1.0

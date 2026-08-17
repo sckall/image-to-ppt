@@ -3,12 +3,13 @@
 
 用法:
   mineru -p <input_dir> -o <mineru_output_dir> --backend pipeline
-  python3 mineru2pptx.py <input_dir> <mineru_output_dir> <output.pptx>
+  python3 mineru2pptx.py <input_dir> <mineru_output_dir> <output.pptx> [--slide-width 13.333]
 
 字号: 三档分档 (大 30pt / 中 26pt / 小 22pt)
 行距: 1.3 倍
 文本框: 自动扩展宽度 (避免挤压文字到下一行)
 """
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -35,7 +36,11 @@ def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333):
     sw = int(slide_w_inches * 914400)
     sh = int(sw / aspect)
 
-    image_ids = sorted([int(p.stem) for p in jpeg_dir.glob("*.jpeg") if p.stem.isdigit()])
+    image_ids = sorted([
+        int(p.stem)
+        for p in jpeg_dir.iterdir()
+        if p.suffix.lower() in (".jpg", ".jpeg") and p.stem.isdigit()
+    ])
 
     for img_id in image_ids:
         cl_path = mineru_dir / str(img_id) / "auto" / f"{img_id}_content_list.json"
@@ -116,8 +121,24 @@ def build_clean_pptx(jpeg_dir, mineru_dir, output_pptx, slide_w_inches=13.333):
     print(f"  slides: {len(prs.slides)}")
 
 
+def _parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        description="MinerU 输出 (auto/*_content_list.json) → 可编辑 PPTX",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument("input_dir", help="输入图片目录 (含 *.jpg 或 *.jpeg)")
+    parser.add_argument("mineru_dir", help="MinerU 输出目录 (含 auto/*_content_list.json)")
+    parser.add_argument("output_pptx", help="输出的 .pptx 文件")
+    parser.add_argument(
+        "--slide-width",
+        type=float,
+        default=13.333,
+        help="slide 宽度(英寸), 默认 13.333 (16:9)",
+    )
+    return parser.parse_args(argv)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print(__doc__)
-        sys.exit(1)
-    build_clean_pptx(sys.argv[1], sys.argv[2], sys.argv[3])
+    args = _parse_args()
+    build_clean_pptx(args.input_dir, args.mineru_dir, args.output_pptx, args.slide_width)

@@ -30,7 +30,6 @@ def resize_for_ocr(src, work_dir):
 
 class Pipeline:
     def __init__(self, lang):
-        from px_image2pptx.ocr import _get_ocr
         from px_image2pptx.textmask import compute_masks
         from px_image2pptx.inpaint import inpaint
         from px_image2pptx.assemble import assemble_pptx

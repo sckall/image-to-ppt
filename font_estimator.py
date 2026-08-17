@@ -9,6 +9,8 @@ font_estimator.py - 字号反推(三档,基于真实数据分档)
 
 依赖: Pillow (字体测宽备用)
 """
+import os
+from PIL import Image, ImageFont
 
 
 # 三档字号经验值 (像素高 -> pt)
@@ -56,27 +58,39 @@ def estimate_font_size(
 
 
 # === 兼容旧接口 (px 同款公式 + 宽度自适应, 备用) ===
-import os
-from PIL import ImageFont
 
 CANDIDATE_POOL = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48, 54, 60, 66, 72, 80, 96]
 
 
 def _load_font(size_pt: int):
+    """跨平台字体加载:macOS / Linux / Windows 全覆盖"""
     candidates = [
+        # macOS
         '/System/Library/Fonts/STHeiti Medium.ttc',
         '/System/Library/Fonts/PingFang.ttc',
         '/System/Library/Fonts/Hiragino Sans GB.ttc',
         '/Library/Fonts/Songti.ttc',
-        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
         '/System/Library/Fonts/Supplemental/Arial.ttf',
+        # Linux (Debian/Ubuntu/Arch 常见路径)
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+        '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc',
+        '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+        '/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc',
+        # Windows
+        'C:/Windows/Fonts/msyh.ttc',       # Microsoft YaHei
+        'C:/Windows/Fonts/msyh.ttf',
+        'C:/Windows/Fonts/simhei.ttf',      # SimHei
+        'C:/Windows/Fonts/simsun.ttc',      # SimSun
+        'C:/Windows/Fonts/arial.ttf',
+        'C:/Windows/Fonts/seguiemj.ttf',   # Segoe UI Emoji
     ]
     for path in candidates:
         if os.path.exists(path):
             try:
                 return ImageFont.truetype(path, size_pt)
-            except:
+            except (OSError, IOError):
                 continue
+    # 最后兜底:PIL 自带位图字体(无中文但不会崩)
     return ImageFont.load_default()
 
 
